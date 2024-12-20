@@ -1,13 +1,23 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const bcrypt = require('bcrypt');
 const db = require('./db'); // Import the database connection
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+
+
+(async () => {
+    const plainTextPassword = 'admin'; // Your password
+    const saltRounds = 10; // Number of salt rounds
+    const hashedPassword = await bcrypt.hash(plainTextPassword, saltRounds);
+  
+    console.log('Hashed Password:', hashedPassword);
+  })();
+
 app.use(cors());
 app.use(express.json()); // Parse JSON bodies
 
@@ -39,14 +49,19 @@ app.post('/api/signin', async (req, res) => {
             return res.status(400).json({ error: 'Email already used' }); // Return a user-friendly message
         }
 
+
+
         // Get the current count of users to generate a new user_id
         const [rows] = await db.query('SELECT COUNT(*) AS count FROM user');
         const user_id = rows[0].count + 1;
 
+        
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
         // Insert the new user into the database
         const [result] = await db.query(
             'INSERT INTO user (name, email, password, phone) VALUES (?, ?, ?, ?)',
-            [name, email, password, phone_number]
+            [name, email, hashedPassword, phone_number]
         );
 
         res.status(201).json({
@@ -84,9 +99,10 @@ app.post('/api/login', async (req, res) => {
 
         const user = rows[0];
 
-        if (user.password !== password) {
-            return res.status(401).json({ error: 'Invalid email or password!' });
-        }
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if (!isPasswordCorrect) {
+        return res.status(401).json({ error: 'Invalid password' });
+            }
         // Successful login: Return user details
         res.status(200).json({
             message: 'Login successful!',
@@ -161,7 +177,34 @@ app.get('/api/booked-time-slots', async (req, res) => {
   });
 
 
+// Sending Informations to the Admin panel
 
+//Send Appointments details to the admin
+app.get('/api/appointments-admin', async (req, res) => {
+    try {
+      const query = `
+        SELECT 
+          a.appointment_id,
+          a.appointment_date,
+          a.time_slot,
+          a.garage,
+          a.service_type,
+          u.name AS user_name,
+          u.phone AS user_phone,
+          cc.model AS car_model,
+          cc.model_year AS car_year
+        FROM appointment a
+        JOIN user u ON a.user_id = u.user_id
+        JOIN customer_car cc ON a.customer_car_id = cc.car_id
+      `;
+  
+      const [rows] = await db.query(query);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      res.status(500).json({ error: 'Failed to fetch appointments' });
+    }
+  });
 
 
 
