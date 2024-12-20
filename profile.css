@@ -1,0 +1,284 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: white;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 0;
+    background-color: hsl(222, 44%, 14%); /* Dark background */
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+.header .username {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.appointments {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.appointment {
+    background: #f8f8f8;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+}
+
+.appointment:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(255, 0, 0, 0.2);
+}
+
+.appointment span {
+    display: block;
+    margin: 5px 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.cancel-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #e63946; /* Red */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-button:hover {
+    background-color: #d32f2f; /* Darker red */
+}
+
+.cancel-button::before {
+    content: "x";
+    font-size: 1.2rem;
+}
+
+.cancel-button:hover::after {
+    content: "Cancel Appointment";
+    position: absolute;
+    top: -30px;
+    right: 50%;
+    transform: translateX(50%);
+    background: red;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.2);
+}
+
+.add-appointment {
+    background-color: #e63946; /* Red */
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.add-appointment:hover {
+    background-color: #d32f2f; /* Darker red */
+    transform: translateY(-3px);
+}
+
+.section-title {
+    font-size: 3rem;
+    font-weight: bold;
+    color: hsl(1, 91%, 37%); /* Red color */
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.section-subtitle {
+    font-size: 1.5rem;
+    font-weight: normal;
+    color: #000; /* Black */
+    margin-top: 5px;
+    text-align: center;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #555;
+}
+
+.btn-danger {
+    background-color: #e63946; /* Red */
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.btn-danger:hover {
+    background-color: #d32f2f; /* Darker red */
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    background-color: #333; /* Dark gray */
+    color: white;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    box-shadow: 2px 0 5px rgba(255, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+.sidebar h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: color 0.3s;
+}
+
+.sidebar ul li a:hover {
+    color: hsl(1, 91%, 60%); /* Lighter red */
+}
+
+/* Main Content Adjustments */
+.main-container {
+    display: flex;
+}
+
+.content {
+    margin-left: 250px; /* Matches sidebar width */
+    flex-grow: 1;
+    padding: 20px;
+}
+
+/* Custom Modal Styles */
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+    font-family: 'Chakra Petch', sans-serif;
+    color: hsl(1, 91%, 37%); /* Red color */
+    font-weight: bold;
+}
+
+.modal-footer .btn {
+    border-radius: 30px;
+    padding: 10px 20px;
+}
+
+.modal-footer .btn-secondary {
+    border-radius: 30px;
+    padding: 10px 20px;
+    width: 200px;
+}
+
+.modal-dialog {
+    max-width: 800px;
+    width: 90%; /* Optional: makes it responsive */
+}
+
+#uniqueProfileDropdown i {
+    font-size: 55px;
+    color: white;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    min-width: 200px;
+}
+
+#successModal .modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+#successModal .modal-body {
+    font-size: 1.2rem;
+    color: #555;
+}

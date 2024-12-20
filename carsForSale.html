@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cars for Sale</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Mulish&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="carForSale.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="index.html" class="logo">
+                <img src="./assets/images/logo.png" alt="Autofix Logo">
+            </a>
+            <nav class="navbar">
+                <a href="index.html" class="navbar-link">Home</a>
+                <a href="about.html" class="navbar-link">About</a>
+                <a href="services.html" class="navbar-link active">Services</a>
+                <a href="carsForSale.html" class="navbar-link">Car Inventory</a>
+                <a href="contact.html" class="navbar-link">Contact</a>
+            </nav>
+            <div>
+                <a href="login.html" class="btn btn-primary">
+                    <span>Login</span>
+                    <span class="material-icons">arrow_forward</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container my-4">
+        <h2 class="section-title text-center">Available Cars</h2>
+        <div class="row" id="car-list">
+            <!-- Cars will be dynamically rendered here -->
+        </div>
+    </div>
+
+    <!-- Modal for Appointment -->
+    <div class="modal fade" id="serviceRequestModal" tabindex="-1" aria-labelledby="serviceRequestModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="serviceRequestModalLabel">Book Appointment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="appointment-form" onsubmit="submitAppointment(event)">
+                        <!-- Hidden field for Car ID and Action -->
+                        <input type="hidden" id="car-id-input" name="car_id" required>
+                        
+                        <!-- Date Picker -->
+                        <div class="mb-3">
+                            <label for="date-input" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="date-input" name="appointmentDay" required>
+                        </div>
+
+                        <!-- Time Slot -->
+                        <div class="mb-3">
+                            <label for="time-slot-input" class="form-label">Time Slot</label>
+                            <input type="time" class="form-control" id="time-slot-input" name="timeSlot" required>
+                        </div>
+
+                        <!-- Service Type -->
+                        <div class="mb-3">
+                            <label for="service-type-input" class="form-label">Service Type</label>
+                            <select class="form-select" id="service-type-input" name="typeOfBooking" required>
+                                <option value="purchase">Purchase</option>
+                                <option value="rent">Rent</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="employee-select" class="form-label">Select Employee</label>
+                            <select class="form-select" id="employee-select" name="employee" required>
+                                <option value="Alice Smith">Alice Smith</option>
+                                <option value="Bob Johnson">Bob Johnson</option>
+                                <option value="Charlie Davis">Charlie Davis</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Book Appointment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script>
+        // Add an event listener to handle the events that the user does on the page
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            console.log("Fetching");
+            
+            // First, we need to load the cars from the database 
+            fetch('http://localhost:5000/api/cars') // Fetch the data stored in localhost:5000/api/cars (data here is brought from the database)
+
+                // After fetching, create a response
+                .then(response => {
+                    
+                    // In case of data not being read correctly, then !response.ok will output true (not false)
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    // Otherwise, create a constant to get the type of the read content
+                    const contentType = response.headers.get('content-type');
+
+                    // If the content that has been read is not JSON, then throw an error
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('Expected JSON but received HTML or another format');
+                    }
+                    // Otherwise, return the JSON response
+                    return response.json();
+                })
+                // The response will be returned as "data" by default
+                .then(data => {
+                    console.log('Cars fetched:', data); // Debugging log
+                    renderCars(data); // Pass the cars data to renderCars
+                })
+
+                .catch(err => console.error('Error fetching cars:', err.message));
+        });
+
+        // Function to render the cars on the page
+        function renderCars(cars) {
+            // Here we get the element that has the id 'car-list', which is a div tag
+            const carList = document.getElementById('car-list');
+            console.log("Rendering");
+            
+            // Using a forEach loop, create cards for every car data that has been read
+            cars.forEach(car => {
+                const card = document.createElement('div');
+                card.className = 'col-md-4 mb-3';
+                card.innerHTML = `
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">${car.make} ${car.model}</h5>
+                            <p class="card-text">${car.year} - $${car.price}</p>
+                            <p class="card-text">Condition: ${car.car_condition}</p>
+                            <p class="card-text">Mileage: ${car.mileage} miles</p>
+                            <button class="btn btn-primary" onclick="openAppointmentForm('${car.company_car_id}')">Book Appointment</button>
+                        </div>
+                    </div>
+                `;
+
+                // Append the card to the carList to display it on the page
+                carList.appendChild(card);
+            });
+        }
+
+        // Function to open the appointment form in a modal
+        function openAppointmentForm(carId) {
+            // Gets the id of the chosen car
+            document.getElementById('car-id-input').value = carId;
+
+            // Using a bootstrap function in JS, create the modal for the appointment form
+            const modal = new bootstrap.Modal(document.getElementById('serviceRequestModal'));
+            modal.show();
+        }
+
+       
+        // Function to submit the appointment form
+        function submitAppointment(event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Get form data
+    const form = document.getElementById('appointment-form');
+    const formData = new FormData(form);
+
+    // Parse employee name into first and last names
+    const employeeName = formData.get('employee');
+    const [employeeFirstName, employeeLastName] = employeeName.split(' ');
+
+    // Construct the data object
+    const appointmentData = {
+        car_id: formData.get('car_id'),
+        appointmentDay: formData.get('appointmentDay'),
+        timeSlot: formData.get('timeSlot'),
+        typeOfBooking: formData.get('typeOfBooking'),
+        employee_first_name: employeeFirstName,
+        employee_last_name: employeeLastName,
+    };
+
+
+    // Send the data to the server
+    fetch('http:localhost:5000/api/carappointment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(appointmentData),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Failed to book appointment');
+            }
+            return response.json();
+        })
+        .then((data) => {
+            alert(data.message); // Show success message
+            form.reset(); // Reset the form
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('serviceRequestModal'));
+            modal.hide();
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+}
+
+    </script>
+</body>
+</html>

@@ -103,7 +103,7 @@
           <div class="card-body text-center">
             <h5 class="card-title">Engine Repair</h5>
             <p class="card-text">Restore your engine's performance with our expert repair solutions.</p>
-            <p class="text-danger fw-bold">N/A</p>
+            <p class="text-danger fw-bold">$1200</p>
             <a href="#" class="btn btn-danger request-button">Request Service</a>
           </div>
         </div>
@@ -488,7 +488,7 @@ const fetchBookedSlots = async () => {
 
   try {
     console.log('Fetching booked time slots...');
-    const response = await fetch(`http://127.0.0.1:5000/api/booked-time-slots?appointmentDate=${appointmentDate}&garage=${garage}`);
+    const response = await fetch(`http://127.0.0.1:5000/api/booked-time-slots?appointment_date=${appointmentDate}&garage=${garage}`);
     if (!response.ok) throw new Error('Failed to fetch booked time slots');
 
     const bookedSlots = await response.json();
