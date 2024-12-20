@@ -1,0 +1,184 @@
+ /* Header Styles */
+ .header {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 0;
+    background-color: hsl(222, 44%, 14%); /* Solid dark background for consistency */
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  }
+  
+  .header .logo img {
+    width: 250px;
+    padding-right: 50px;
+    justify-content: left;
+  }
+  
+  .navbar {
+    display: flex;
+    gap: 40px;
+    justify-content: flex-start;
+    flex-grow: 1;
+  }
+  
+  .navbar-link {
+    text-transform: uppercase;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 25px;
+    font-weight: 600;
+    color: hsl(0, 0%, 100%);
+    transition: color 0.2s;
+  }
+  
+  .navbar-link.active {
+    color: hsl(1, 91%, 37%);
+    font-weight: bold;
+  }
+  
+  .navbar-link:hover {
+    color: hsl(1, 91%, 37%);
+  }
+  
+  .btn-primary {
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: hsl(1, 91%, 37%);
+    color: hsl(0, 0%, 100%);
+    font-family: 'Chakra Petch', sans-serif;
+    text-transform: uppercase;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .btn-primary:hover {
+    background-color: hsl(222, 50%, 11%);
+    transform: translateY(-3px);
+  }
+
+  
+    /* Grid container styles */
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 3 columns */
+        grid-template-rows: repeat(2, auto); /* 2 rows */
+        gap: 20px;
+      }
+  
+      .grid-container .card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        text-align: center;
+        height: 500px;
+        position: relative;
+        overflow-y: auto; 
+      }
+  
+      .grid-container .card h3 {
+        background-color: hsl(1, 91%, 37%);
+        color: white;
+        padding: 10px;
+        border-radius: 5px 5px 0 0;
+        margin-bottom: 15px;
+      }
+  
+      .grid-container .card table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+  
+      .grid-container .card table th {
+        background-color: hsl(222, 44%, 14%);
+        color: white;
+        text-align: left;
+        padding: 8px;
+        font-size: 14px;
+      }
+  
+      .grid-container .card table td {
+        padding: 8px;
+        border: 1px solid #ddd;
+      }
+  
+      /* Add button */
+      .add-button {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: hsl(1, 91%, 37%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+  
+      .add-button:hover {
+        background-color: hsl(1, 81%, 33%);
+      }
+  
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        height: 500px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+      }
+      
+      .modal.active {
+        display: block;
+      }
+  
+      .modal h3 {
+        margin-bottom: 20px;
+        font-size: 24px;
+      }
+  
+      .modal form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+  
+      .modal form label {
+        font-weight: bold;
+      }
+  
+      .modal form input,
+      .modal form select {
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+  
+      .modal form button {
+        padding: 10px 20px;
+        background-color: hsl(1, 91%, 37%);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+  
+      .modal form button:hover {
+        background-color: hsl(1, 81%, 33%);
+      }

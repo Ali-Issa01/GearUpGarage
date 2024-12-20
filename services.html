@@ -492,7 +492,7 @@ const fetchBookedSlots = async () => {
     if (!response.ok) throw new Error('Failed to fetch booked time slots');
 
     const bookedSlots = await response.json();
-
+    
     // Iterate through the timeSlot dropdown and hide booked slots
     Array.from(timeSlotDropdown.options).forEach((option) => {
       if (bookedSlots.includes(option.value)) {

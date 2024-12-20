@@ -46,42 +46,52 @@
   <script>
     const form = document.getElementById('loginForm');
     const messageBox = document.getElementById('messageBox');
-
+  
+    // Function to show messages
     function showMessage(message, type) {
       messageBox.textContent = message; // Set the message text
       messageBox.className = `message-box ${type}`; // Add success/error class
       messageBox.style.display = 'block'; // Show the message box
-
+  
       // Automatically hide the message after 5 seconds
       setTimeout(() => {
         messageBox.style.display = 'none';
       }, 5000);
     }
-
+  
+    // Form submission event listener
     form.addEventListener('submit', async (event) => {
       event.preventDefault(); // Prevent form from submitting normally
-
+  
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-
+  
       try {
         const response = await fetch('http://localhost:5000/api/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         });
-
+  
         const result = await response.json();
-
+  
         if (response.ok) {
+          // Store user information in local storage
           localStorage.setItem('user', JSON.stringify({
-          userId: result.userId,
-          username: result.username,
-        }));
-          
-          window.location.href = 'index.html'; // Redirect on successful login
+            userId: result.userId,
+            username: result.username,
+            
+          }));
+  
+          // Redirect based on user role
+          if (result.username === 'admin') {
+            window.location.href = 'admin.html'; // Redirect admin to admin dashboard
+          } else {
+            window.location.href = 'index.html'; // Redirect normal users to home page
+          }
         } else {
-          showMessage(result.error, 'error'); // Display error message
+          // Display error message
+          showMessage(result.error, 'error');
         }
       } catch (error) {
         console.error('Error:', error);
@@ -89,6 +99,7 @@
       }
     });
   </script>
+  
   
 </body>
 

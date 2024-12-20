@@ -48,7 +48,7 @@ app.post('/api/signin', async (req, res) => {
         
         const [result] = await db.query(
             'INSERT INTO user (name, email, password, phone) VALUES (?, ?, ?, ?)',
-            [name, email, password, phone_number]
+            [name, email, hashedPassword, phone_number]
         );
 
         res.status(201).json({
