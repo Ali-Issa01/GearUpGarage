@@ -203,6 +203,7 @@
         body: JSON.stringify(appointmentData),
     })
         .then((response) => {
+            console.log(response);
             if (!response.ok) {
                 throw new Error('Failed to book appointment');
             }
@@ -217,6 +218,7 @@
         })
         .catch((error) => {
             console.error('Error:', error);
+            console.log(error)
             alert('An error occurred. Please try again.');
         });
 }

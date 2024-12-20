@@ -1,24 +1,24 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const db = require('./db'); // Import the database connection
+const db = require('./db'); 
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+
 app.use(cors());
-app.use(express.json()); // Parse JSON bodies
+app.use(express.json()); 
 
-// Serve Static Frontend Files
-app.use(express.static(path.join(__dirname, '../'))); // Adjust path to your frontend directory
 
-// Test Database Connection
+app.use(express.static(path.join(__dirname, '../'))); 
+
+
 app.get('/api/test-db', async (req, res) => {
     try {
       console.log("Connected");
-        const [rows] = await db.query('SELECT 1 + 1 AS result'); // Simple query to test connection
+        const [rows] = await db.query('SELECT 1 + 1 AS result'); 
         res.json({ message: 'Database connected!', result: rows[0].result });
     } catch (error) {
       console.log("Error");
@@ -26,7 +26,7 @@ app.get('/api/test-db', async (req, res) => {
     }
 });
 
-// Route to insert a user using the sign in page
+
 app.post('/api/signin', async (req, res) => {
     const { name, email, password, phone_number } = req.body;
 
@@ -35,17 +35,17 @@ app.post('/api/signin', async (req, res) => {
     }
 
     try {
-        // Check if email already exists
+        
         const [existingUser] = await db.query('SELECT email FROM user WHERE email = ?', [email]);
         if (existingUser.length > 0) {
-            return res.status(400).json({ error: 'Email already used' }); // Return a user-friendly message
+            return res.status(400).json({ error: 'Email already used' }); 
         }
 
-        // Get the current count of users to generate a new user_id
+        
         const [rows] = await db.query('SELECT COUNT(*) AS count FROM user');
         const user_id = rows[0].count + 1;
 
-        // Insert the new user into the database
+        
         const [result] = await db.query(
             'INSERT INTO user (name, email, password, phone) VALUES (?, ?, ?, ?)',
             [name, email, password, phone_number]
@@ -56,19 +56,18 @@ app.post('/api/signin', async (req, res) => {
             userId: user_id,
         });
     } catch (error) {
-        // Check if the error is a duplicate entry error
+        
         if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({ error: 'Email already used' }); // Return a user-friendly message
+            return res.status(400).json({ error: 'Email already used' }); 
         }
 
-        // Log and handle other errors
+        
         console.error('Database Error:', error);
         res.status(500).json({ error: 'Database error!', details: error.message });
     }
 });
 
 
-//Login page
 
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
@@ -89,7 +88,7 @@ app.post('/api/login', async (req, res) => {
         if (user.password !== password) {
             return res.status(401).json({ error: 'Invalid email or password!' });
         }
-        // Successful login: Return user details
+        
         res.status(200).json({
             message: 'Login successful!',
             userId: user.user_id,
@@ -103,7 +102,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 
-// Route to handle appointment bookings
+
 app.post('/api/appointments', async (req, res) => {
     const {
       carModel,
@@ -117,21 +116,21 @@ app.post('/api/appointments', async (req, res) => {
     } = req.body;
   
     try {
-      // Step 1: Insert into the customer_car table
+      
       const [carResult] = await db.query(
         'INSERT INTO customer_car (user_id, model, year, car_condition) VALUES (?, ?, ?, ?)',
         [userId, carModel, modelYear, carCondition]
       );
   
-      const customerCarId = carResult.insertId; // Get the inserted customer car ID
+      const customerCarId = carResult.insertId; 
   
-      // Step 2: Insert into the appointment table
+      
       await db.query(
         'INSERT INTO appointments (user_id, customer_car_id, appointment_date, time_slot, garage, service_type) VALUES (?, ?, ?, ?, ?, ?)',
         [userId, customerCarId, appointmentDay, timeSlot, garage, serviceType]
       );
   
-      // Success response
+      
       res.status(201).json({ message: 'Appointment booked successfully!' });
     } catch (error) {
       console.error('Database Error:', error);
@@ -141,7 +140,8 @@ app.post('/api/appointments', async (req, res) => {
 
 
 
-//Sending time slots to the service page
+
+  //Sending time slots to the service page
 app.get('/api/booked-time-slots', async (req, res) => {
     const { appointmentDate, garage } = req.query;
   
@@ -151,7 +151,7 @@ app.get('/api/booked-time-slots', async (req, res) => {
         [appointmentDate, garage]
       );
   
-      const bookedSlots = rows.map((row) => row.time_slot); // Extract time slots
+      const bookedSlots = rows.map((row) => row.time_slot); 
       res.status(200).json(bookedSlots);
     } catch (error) {
       console.error('Error fetching booked slots:', error);
@@ -159,14 +159,14 @@ app.get('/api/booked-time-slots', async (req, res) => {
     }
   });
 
-// Route to fetch all appointments
+
 app.get('/api/appointments', async (req, res) => {
   try {
       const [rows] = await db.query(
           `SELECT * FROM appointments`
       );
 
-      // Return the appointments as a response
+      
       res.status(200).json(rows);
     }
     catch (error) {
@@ -174,6 +174,7 @@ app.get('/api/appointments', async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch appointments' });
     }
 });
+
 
 //To fetch all appointments booked by the user with id = ?
 app.get('/api/appointments/user', async (req, res) => {
@@ -184,7 +185,7 @@ app.get('/api/appointments/user', async (req, res) => {
   }
 
   try {
-      // Query to fetch appointments for the user
+      
       const [appointments] = await db.query(
           `SELECT 
               a.appointment_id, 
@@ -217,7 +218,7 @@ app.get('/api/appointments/user', async (req, res) => {
   }
 });
 
-// Route to cancel an appointment
+
 app.delete('/api/appointments/:appointmentId', async (req, res) => {
   const { appointmentId } = req.params;
 
@@ -226,14 +227,14 @@ app.delete('/api/appointments/:appointmentId', async (req, res) => {
   }
 
   try {
-      // Delete the appointment from the appointment table
+      
       const [result] = await db.query('DELETE FROM appointments WHERE appointment_id = ?', [appointmentId]);
 
       if (result.affectedRows === 0) {
           return res.status(404).json({ error: 'Appointment not found' });
       }
 
-      // Success response
+      
       res.status(200).json({ message: 'Appointment canceled successfully!' });
   } catch (error) {
       console.error('Error canceling appointment:', error);
@@ -241,22 +242,25 @@ app.delete('/api/appointments/:appointmentId', async (req, res) => {
   }
 });
 
+
 //get the cars from the database
 app.get('/api/cars', async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM company_car');
-        res.status(200).json(rows); // Send cars data as JSON
+        res.status(200).json(rows); 
     } catch (error) {
         console.error('Error fetching cars:', error);
         res.status(500).json({ error: 'Failed to fetch cars from the database' });
     }
 });
 
+
 //get the car_appointment data
 
 app.get('/api/carappointment', async (req,res) => {
     try {
         console.log("Fetching car appointment");
+        
         
         //Select all rows from the table
         const [rows] = await db.query('SELECT * FROM carappointment');
@@ -267,9 +271,10 @@ app.get('/api/carappointment', async (req,res) => {
     }
 });
 
+
+//Post 
 app.post('/api/carappointment', async (req, res) => {
     const {
-        user_id,
         company_car_id,
         appointment_date,
         time_slot,
@@ -277,29 +282,14 @@ app.post('/api/carappointment', async (req, res) => {
         employee_first_name,
         employee_last_name
     } = req.body;
-
-    if (!user_id || !company_car_id || !appointment_date || !time_slot || !type_of_booking || !employee_first_name || !employee_last_name) {
-        return res.status(400).json({ error: 'Please provide all required fields!' });
-    }
-
+    console.log("req");
+    console.log(req);
+    
     try {
-        // Check if the user_id exists in the USER table
-        const [userExists] = await db.query('SELECT user_id FROM USER WHERE user_id = ?', [user_id]);
-        if (userExists.length === 0) {
-            return res.status(400).json({ error: 'User does not exist!' });
-        }
-
-        // Check if the company_car_id exists in the COMPANY_CAR table
-        const [carExists] = await db.query('SELECT company_car_id FROM COMPANY_CAR WHERE company_car_id = ?', [company_car_id]);
-        if (carExists.length === 0) {
-            return res.status(400).json({ error: 'Company car does not exist!' });
-        }
-
-        // Insert the data into the CARAPPOINTMENT table
+        
         const [result] = await db.query(
-            'INSERT INTO CARAPPOINTMENT (user_id, company_car_id, appointment_date, time_slot, type_of_booking, employee_first_name, employee_last_name) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO carappointment (company_car_id, appointment_date, time_slot, type_of_booking, employee_first_name, employee_last_name) VALUES (?, ?, ?, ?, ?, ?)',
             [
-                user_id,
                 company_car_id,
                 appointment_date,
                 time_slot,
@@ -309,21 +299,21 @@ app.post('/api/carappointment', async (req, res) => {
             ]
         );
 
-        // Return a success response
         res.status(201).json({
-            message: 'Car appointment booked successfully!',
-            appointmentId: result.insertId // Return the appointment ID
+            message: 'Car appointment booked successfully',
+            appointmentId: result.insertId 
         });
     } catch (error) {
         console.error('Database Error:', error);
-        res.status(500).json({ error: 'Failed to book the car appointment', details: error.message });
+        res.status(500).json({ error: 'Failed to book appointment', details: error.message });
     }
 });
 
 
-// Start Server
+
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http:
+        //localhost:${PORT}`);
 });
 
 
